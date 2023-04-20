@@ -16,9 +16,12 @@ def search_spotify(artist, track):
     if result['tracks']['items']:
         track_info = result['tracks']['items'][0]
         track_id = track_info['id']
-        album_cover_link = track_info['album']['images'][0]['url']
+        album_info = track_info['album']
+        album_name = album_info['name']
+        release_year = album_info['release_date'][0:4]
+        album_cover_link = album_info['images'][0]['url']
         spotify_link = f'https://open.spotify.com/track/{track_id}'
-        return spotify_link, album_cover_link
+        return spotify_link, album_cover_link, album_name, release_year
     else:
         return None, None
 
@@ -54,11 +57,12 @@ if len(sys.argv) < 3:
 else:
     artist = sys.argv[1]
     track = sys.argv[2]
-    spotify_link, album_cover_link = search_spotify(artist, track)
+    spotify_link, album_cover_link, album_name, release_year = search_spotify(artist, track)
     youtube_link = search_youtube(artist, track)
     yandex_link = search_yandex(artist, track)
 
     print(f'#songoftheday {artist} - {track}')
+    print(f'💽 {album_name} ({release_year})')
     print(f'🩻 {album_cover_link}\n')
     print(f'🟢 Spotify: {spotify_link}')
     print(f'🟡 Yandex.Music: {yandex_link}')
