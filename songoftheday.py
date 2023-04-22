@@ -10,6 +10,15 @@ sp = spotipy.Spotify(auth_manager=spotipy.oauth2.SpotifyClientCredentials(client
 # Authenticate with the YouTube Data API using your API key
 youtube = build('youtube', 'v3', developerKey='YOUTUBE_DEV_KEY')
 
+class SpotifyData:
+    def __init__(self, link, cover, album, year, hashtags):
+        self.link = link
+        self.cover = cover
+        self.album = album
+        self.year = year
+        self.hashtags = hashtags
+    
+
 # Search for the song on Spotify
 def search_spotify(artist, track):
     result = sp.search(q=f'artist:{artist} track:{track}', type='track', limit=1)
@@ -21,9 +30,15 @@ def search_spotify(artist, track):
         release_year = album_info['release_date'][0:4]
         album_cover_link = album_info['images'][0]['url']
         spotify_link = f'https://open.spotify.com/track/{track_id}'
-        return spotify_link, album_cover_link, album_name, release_year
+
+        artist_uri = track_info['artists'][0]['uri']
+        artist_data = sp.artist(f'{artist_uri}')
+        genres = artist_data['genres']
+        hashtags = ['#' + genre.replace(' ', '') for genre in genres]
+        hashtags_string = ' '.join(hashtags)
+        return SpotifyData(spotify_link, album_cover_link, album_name, release_year, hashtags_string)
     else:
-        return None, None
+        return None
 
 # Search for the song on YouTube
 def search_youtube(artist, track):
@@ -57,13 +72,13 @@ if len(sys.argv) < 3:
 else:
     artist = sys.argv[1]
     track = sys.argv[2]
-    spotify_link, album_cover_link, album_name, release_year = search_spotify(artist, track)
+    spotify_data = search_spotify(artist, track)
     youtube_link = search_youtube(artist, track)
     yandex_link = search_yandex(artist, track)
 
     print(f'#songoftheday {artist} - {track}')
-    print(f'💽 {album_name} ({release_year})')
-    print(f'🩻 {album_cover_link}\n')
-    print(f'🟢 Spotify: {spotify_link}')
+    print(f'💽 {spotify_data.album} ({spotify_data.year})')
+    print(f'🩻 {spotify_data.cover} {spotify_data.hashtags}\n')
+    print(f'🟢 Spotify: {spotify_data.link}')
     print(f'🟡 Yandex.Music: {yandex_link}')
     print(f'🔴 YouTube: {youtube_link}')
