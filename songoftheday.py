@@ -34,7 +34,7 @@ def search_spotify(artist, track):
         artist_uri = track_info['artists'][0]['uri']
         artist_data = sp.artist(f'{artist_uri}')
         genres = artist_data['genres']
-        hashtags = ['#' + genre.replace(' ', '') for genre in genres]
+        hashtags = ['#' + genre.replace(' ', '').replace('-', '') for genre in genres]
         hashtags_string = ' '.join(hashtags)
         return SpotifyData(spotify_link, album_cover_link, album_name, release_year, hashtags_string)
     else:
