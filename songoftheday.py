@@ -2,6 +2,7 @@ import spotipy
 import requests
 import urllib.parse
 import sys
+from googlesearch import search
 from googleapiclient.discovery import build
 
 # Authenticate with the Spotify API using your client ID and client secret
@@ -17,6 +18,12 @@ class SpotifyData:
         self.album = album
         self.year = year
         self.hashtags = hashtags
+    
+# Search for the Apple Music link
+
+def search_apple_music(artist, track):
+    results = search(f'{artist} {track} Apple Music', num_results=1)
+    return next(results)
     
 
 # Search for the song on Spotify
@@ -73,6 +80,7 @@ else:
     artist = sys.argv[1]
     track = sys.argv[2]
     spotify_data = search_spotify(artist, track)
+    apple_link = search_apple_music(artist, track)
     youtube_link = search_youtube(artist, track)
     yandex_link = search_yandex(artist, track)
 
@@ -80,5 +88,7 @@ else:
     print(f'💽 {spotify_data.album} ({spotify_data.year})')
     print(f'🩻 {spotify_data.cover} {spotify_data.hashtags}\n')
     print(f'🟢 Spotify: {spotify_data.link}')
+    print(f'🍎 Apple Music: {apple_link}')
     print(f'🟡 Yandex.Music: {yandex_link}')
-    print(f'🔴 YouTube: {youtube_link}')
+    print(f'🎥 YouTube: {youtube_link}')
+    
