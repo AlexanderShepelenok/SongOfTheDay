@@ -22,10 +22,12 @@ class SpotifyData:
 # Search for the Apple Music link
 
 def search_apple_music(artist, track):
-    results = search(f'{artist} {track} Apple Music', num_results=1)
-    return next(results)
+    results = search(f'{artist} {track} Apple Music', num_results=10)
+    for url in results:
+            if "/song/" in url:
+                return url
+    return None
     
-
 # Search for the song on Spotify
 def search_spotify(artist, track):
     result = sp.search(q=f'artist:{artist} track:{track}', type='track', limit=1)
